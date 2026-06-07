@@ -1,0 +1,21 @@
+[Unit]
+Description=RuneScape Dragonwilds Dedicated Server
+After=network-online.target
+Wants=network-online.target
+
+[Container]
+Image=ghcr.io/braccae/runescape_dragonwilds_dedicated_server_docker:latest
+AutoUpdate=registry
+Environment=OwnerId=
+Environment=ServerName=My Dragonwilds Server
+Environment=DefaultWorldName=MyWorld
+Environment=WorldPassword=changeme
+Environment=AdminPassword=admin123
+Volume=rsdragonwilds-saves.volume:/home/steam/rs_server/RSDragonwilds/Saved/Savegames
+PublishPort=7777:7777/udp
+
+[Service]
+Restart=unless-stopped
+
+[Install]
+WantedBy=default.target
