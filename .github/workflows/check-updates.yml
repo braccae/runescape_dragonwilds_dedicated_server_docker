@@ -1,0 +1,85 @@
+name: Check for Game Updates
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'   # every 6 hours
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      should_build: ${{ steps.check.outputs.should_build }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get current build ID from Steam
+        id: steam
+        run: |
+          RESPONSE=$(curl -s --max-time 30 "https://api.steamcmd.net/v1/info/4019830")
+          BUILD_ID=$(echo "$RESPONSE" | jq -r '.data."4019830".depots.branches.public.buildid')
+          if [ -z "$BUILD_ID" ] || [ "$BUILD_ID" = "null" ]; then
+            echo "Failed to fetch build ID from Steam API"
+            echo "response=$RESPONSE" | head -c 500
+            exit 1
+          fi
+          echo "build_id=$BUILD_ID" >> "$GITHUB_OUTPUT"
+          echo "Current Steam build ID: $BUILD_ID"
+
+      - name: Read current build ID from repo
+        id: repo
+        run: |
+          if [ -f steam_build_id.txt ]; then
+            REPO_ID=$(cat steam_build_id.txt | tr -d '[:space:]')
+            echo "current_id=$REPO_ID" >> "$GITHUB_OUTPUT"
+            echo "Repo build ID: $REPO_ID"
+          else
+            echo "current_id=" >> "$GITHUB_OUTPUT"
+            echo "No steam_build_id.txt in repo (first run)"
+          fi
+
+      - name: Update build ID file and commit
+        id: check
+        run: |
+          LATEST="${{ steps.steam.outputs.build_id }}"
+          CURRENT="${{ steps.repo.outputs.current_id }}"
+
+          if [ "$LATEST" = "$CURRENT" ]; then
+            echo "should_build=false" >> "$GITHUB_OUTPUT"
+            echo "No update needed (still build $LATEST)"
+            exit 0
+          fi
+
+          echo "$LATEST" > steam_build_id.txt
+          echo "should_build=true" >> "$GITHUB_OUTPUT"
+          echo "New version detected! ($CURRENT → $LATEST)"
+
+      - name: Commit updated build ID
+        if: steps.check.outputs.should_build == 'true'
+        run: |
+          BUILD_ID="${{ steps.steam.outputs.build_id }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add steam_build_id.txt
+          git commit -m "chore: update steam build ID to $BUILD_ID"
+          git push
+          echo "Committed steam_build_id.txt (build $BUILD_ID)"
+
+      - name: Trigger container build
+        if: steps.check.outputs.should_build == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const buildId = '${{ steps.steam.outputs.build_id }}';
+            await github.rest.actions.createWorkflowDispatch({
+              owner,
+              repo,
+              workflow_id: 'build-and-push.yml',
+              ref: 'main',
+              inputs: {
+                reason: `Steam build ${buildId} auto-detected`
+              }
+            });
+            console.log(`Triggered build-and-push.yml (Steam build ${buildId})`);

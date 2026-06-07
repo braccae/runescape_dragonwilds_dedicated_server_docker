@@ -5,6 +5,17 @@ on:
     branches: [main]
     tags: ['v*']
   workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Reason for build'
+        required: false
+        type: string
+  workflow_call:
+    inputs:
+      reason:
+        description: 'Reason for build'
+        required: false
+        type: string
 
 env:
   REGISTRY: ghcr.io
@@ -44,6 +55,14 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=raw,value=latest,enable={{is_default_branch}}
             type=sha,format=short
+
+      - name: Build reason
+        run: |
+          if [ -n "${{ inputs.reason }}" ]; then
+            echo "Triggered by: ${{ inputs.reason }}"
+          else
+            echo "Triggered by: ${{ github.event_name }}"
+          fi
 
       - name: Build and push
         uses: docker/build-push-action@v6
