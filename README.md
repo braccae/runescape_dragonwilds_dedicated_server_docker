@@ -17,7 +17,7 @@ podman run -d \
   -e DefaultWorldName="MyWorld" \
   -e WorldPassword="changeme" \
   -e AdminPassword="admin123" \
-  -v ./rsdragonwilds-saves:/home/steam/rs_server/RSDragonwilds/Saved/Savegames \
+  -v ./rsdragonwilds-saves:/home/steam/rs_server/RSDragonwilds/Saved/SaveGames \
   -p 7777:7777/udp \
   ghcr.io/<your-org>/runescape_dragonwilds_dedicated_server_docker
 ```
@@ -52,7 +52,7 @@ All settings are passed as environment variables. These are substituted at runti
 
 | Container path | Purpose             |
 |----------------|---------------------|
-| `/home/steam/rs_server/RSDragonwilds/Saved/Savegames` | World save data |
+| `/home/steam/rs_server/RSDragonwilds/Saved/SaveGames` | World save data |
 
 Mount a volume to persist your world between container restarts.
 

@@ -1,6 +1,6 @@
-FROM docker.io/cm2network/steamcmd:steam-trixie
+FROM docker.io/cm2network/steamcmd:root-trixie
 
-USER root
+# USER root
 RUN apt update && apt install -y --no-install-recommends \
     gettext-base \
     tini \
@@ -26,8 +26,8 @@ COPY DedicatedServer.ini DedicatedServer.ini
 WORKDIR /home/steam/rs_server
 
 
-VOLUME /home/steam/rs_server/RSDragonwilds/Saved/Savegames
+VOLUME /home/steam/rs_server/RSDragonwilds/Saved/SaveGames
 # VOLUME /home/steam/rs_server/RSDragonwilds/Plugins
 
-USER root
+# USER root
 ENTRYPOINT ["/usr/bin/tini", "--", "/entrypoint.sh"]
