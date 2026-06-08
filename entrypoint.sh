@@ -7,10 +7,6 @@ CONFIG_DIR="/home/steam/rs_server/RSDragonwilds/Saved/Config/LinuxServer"
 SAVED_GAMES_DIR="/home/steam/rs_server/RSDragonwilds/Saved/SaveGames"
 GUID_FILE="${SAVED_GAMES_DIR}/server_guid.txt"
 
-echo "Creating config and SaveGames directories if they don't exist..."
-mkdir -p ${CONFIG_DIR}
-mkdir -p ${SAVED_GAMES_DIR}
-
 echo "Backing up existing config if present..."
 if [ -f "${CONFIG_DIR}/DedicatedServer.ini" ]; then
     cp ${CONFIG_DIR}/DedicatedServer.ini ${CONFIG_DIR}/DedicatedServer.ini.bak
