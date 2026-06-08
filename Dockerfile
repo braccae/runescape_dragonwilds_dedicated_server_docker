@@ -9,10 +9,11 @@ RUN apt update && apt install -y --no-install-recommends \
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-USER steam
+# USER steam
 
 WORKDIR /home/steam/rs_server
 
+RUN chown -Rv root:root /home/steam/steamcmd
 RUN /home/steam/steamcmd/steamcmd.sh +force_install_dir /home/steam/rs_server +login anonymous +app_update 4019830 +quit +validate
 
 ENV OwnerId=
