@@ -29,4 +29,5 @@ WORKDIR /home/steam/rs_server
 VOLUME /home/steam/rs_server/RSDragonwilds/Saved/Savegames
 # VOLUME /home/steam/rs_server/RSDragonwilds/Plugins
 
+USER root
 ENTRYPOINT ["/usr/bin/tini", "--", "/entrypoint.sh"]
