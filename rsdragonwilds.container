@@ -11,7 +11,7 @@ Environment=ServerName=My Dragonwilds Server
 Environment=DefaultWorldName=MyWorld
 Environment=WorldPassword=changeme
 Environment=AdminPassword=admin123
-Volume=rsdragonwilds-saves.volume:/home/steam/rs_server/RSDragonwilds/Saved/Savegames
+Volume=rsdragonwilds-saves.volume:/home/steam/rs_server/RSDragonwilds/Saved/SaveGames
 PublishPort=7777:7777/udp
 
 [Service]

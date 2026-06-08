@@ -4,11 +4,8 @@ set -e
 
 TEMPLATE_DIR="/home/steam/rs_server/templates"
 CONFIG_DIR="/home/steam/rs_server/RSDragonwilds/Saved/Config/LinuxServer"
-SAVED_GAMES_DIR="/home/steam/rs_server/RSDragonwilds/Saved/SavedGames"
+SAVED_GAMES_DIR="/home/steam/rs_server/RSDragonwilds/Saved/SaveGames"
 GUID_FILE="${SAVED_GAMES_DIR}/server_guid.txt"
-
-echo "Creating config directory if it doesn't exist..."
-mkdir -p ${CONFIG_DIR}
 
 echo "Backing up existing config if present..."
 if [ -f "${CONFIG_DIR}/DedicatedServer.ini" ]; then
@@ -34,7 +31,7 @@ echo "Substituting environment variables into the template and writing to config
 envsubst < ${TEMPLATE_DIR}/DedicatedServer.ini > ${CONFIG_DIR}/DedicatedServer.ini
 
 echo "Correcting Permissions..."
-chown -fRv steam:steam /home/steam/rs_server/RSDragonwilds/Saved/SavedGames
+chown -Rv steam:steam ${SAVED_GAMES_DIR}
 
 echo "Launching Server..."
 su -u steam -c "/home/steam/rs_server/RSDragonwildsServer.sh -log -NewConsole -Port=7777"
